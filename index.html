@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111111">
+  <meta name="description" content="Demonstração de cardápio digital da N´hora Burger.">
+  <title>N´hora Burger | Ver produtos e fazer pedidos</title>
+  <style>
+    :root{
+      --bg:#f6f6f6;--card:#fff;--text:#171717;--muted:#707070;
+      --dark:#111;--line:#e8e8e8;--accent:#f5b400;--danger:#d93434;
+      --shadow:0 10px 30px rgba(0,0,0,.08);--radius:18px
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+    button,input{font:inherit}
+    button{cursor:pointer;border:0}
+    .top{background:#111;color:#fff;position:sticky;top:0;z-index:20;box-shadow:0 2px 12px #0002}
+    .nav{max-width:1180px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:14px 18px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:900}
+    .logo{width:42px;height:42px;border-radius:13px;background:var(--accent);display:grid;place-items:center;font-size:23px}
+    .brand small{display:block;color:#aaa;font-weight:500;font-size:11px}
+    .cart-btn{background:#fff;color:#111;border-radius:12px;padding:10px 14px;font-weight:800}
+    .hero{background:linear-gradient(135deg,#111,#252525);color:#fff}
+    .hero-inner{max-width:1180px;margin:auto;padding:54px 18px 48px;display:grid;grid-template-columns:1.25fr .75fr;gap:30px;align-items:center}
+    .tag{display:inline-block;background:#ffffff18;border:1px solid #ffffff22;padding:7px 11px;border-radius:999px;font-size:12px;margin-bottom:16px}
+    h1{font-size:clamp(36px,6vw,64px);line-height:.98;letter-spacing:-2px;margin-bottom:18px}
+    .hero p{color:#ccc;max-width:590px;line-height:1.65}
+    .hero-card{background:#fff;color:#111;border-radius:28px;padding:28px;box-shadow:0 25px 60px #0005;transform:rotate(1deg)}
+    .burger-art{height:190px;border-radius:20px;background:radial-gradient(circle at 50% 35%,#ffc64d 0 8%,transparent 9%),linear-gradient(145deg,#4b2414,#a64d1f 45%,#e7a52f);display:grid;place-items:center;font-size:90px}
+    .hero-card strong{display:block;font-size:22px;margin-top:16px}
+    .hero-card span{color:#777;font-size:13px}
+    main{max-width:1180px;margin:auto;padding:28px 18px 110px}
+    .section-head{display:flex;align-items:end;justify-content:space-between;gap:15px;margin-bottom:16px}
+    .section-head h2{font-size:26px}
+    .section-head p{color:var(--muted);font-size:13px}
+    .search{width:100%;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:#fff;outline:0;margin-bottom:14px}
+    .categories{display:flex;gap:9px;overflow:auto;padding-bottom:10px;margin-bottom:22px}
+    .cat{white-space:nowrap;background:#fff;border:1px solid var(--line);padding:9px 14px;border-radius:999px;color:#555}
+    .cat.active{background:#111;color:#fff;border-color:#111}
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .product{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:0 5px 18px #00000008}
+    .photo{height:175px;display:grid;place-items:center;font-size:75px;background:linear-gradient(135deg,#f4f4f4,#e5e5e5)}
+    .product-body{padding:15px}
+    .product h3{font-size:17px;margin-bottom:6px}
+    .desc{font-size:12px;color:var(--muted);line-height:1.45;min-height:35px}
+    .bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px}
+    .price{font-weight:900}
+    .add{background:#111;color:#fff;border-radius:11px;padding:9px 12px;font-weight:800}
+    .info{margin-top:35px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px;display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+    .info div{padding:10px}.info b{display:block;margin-bottom:5px}.info span{color:var(--muted);font-size:13px}
+    .cart-panel{position:fixed;right:16px;bottom:16px;width:min(410px,calc(100% - 32px));background:#fff;border-radius:22px;box-shadow:0 20px 60px #0003;border:1px solid var(--line);z-index:50;display:none;overflow:hidden}
+    .cart-panel.open{display:block}
+    .cart-head{display:flex;justify-content:space-between;align-items:center;padding:16px;border-bottom:1px solid var(--line)}
+    .close{background:#eee;border-radius:10px;padding:7px 10px}
+    .cart-items{max-height:310px;overflow:auto;padding:8px 16px}
+    .cart-row{display:flex;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid var(--line)}
+    .cart-row small{display:block;color:var(--muted);margin-top:3px}
+    .qty{display:flex;align-items:center;gap:8px}
+    .qty button{width:28px;height:28px;border-radius:8px;background:#eee}
+    .cart-foot{padding:16px}
+    .total{display:flex;justify-content:space-between;font-size:18px;font-weight:900;margin-bottom:12px}
+    .checkout{width:100%;padding:14px;background:#159447;color:#fff;border-radius:13px;font-weight:900}
+    .empty{text-align:center;color:var(--muted);padding:30px 10px}
+    .demo-note{margin-top:18px;font-size:12px;color:#777;text-align:center}
+    @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.hero-inner{grid-template-columns:1fr}.hero-card{max-width:420px}.info{grid-template-columns:1fr}}
+    @media(max-width:520px){.grid{grid-template-columns:1fr 1fr;gap:10px}.photo{height:135px;font-size:55px}.product-body{padding:12px}.product h3{font-size:15px}.desc{font-size:11px}.add{padding:8px 9px;font-size:12px}.hero-inner{padding-top:38px}.brand span{font-size:14px}}
+  </style>
+</head>
+<body>
+  <header class="top">
+    <nav class="nav">
+      <div class="brand">
+        <div class="logo">🍔</div>
+        <div>N´hora Burger<small>Cardápio digital</small></div>
+      </div>
+      <button class="cart-btn" onclick="toggleCart()">🛒 Pedido (<span id="cartCount">0</span>)</button>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <span class="tag">DEMONSTRAÇÃO DIGITAL</span>
+        <h1>Ver produtos<br>e fazer pedidos.</h1>
+        <p>Escolha os seus favoritos, adicione ao pedido e envie a encomenda diretamente pelo WhatsApp.</p>
+      </div>
+      <div class="hero-card">
+        <div class="burger-art">🍔</div>
+        <strong>O teu pedido começa aqui.</strong>
+        <span>Rápido, simples e pensado para telemóvel.</span>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="section-head">
+      <div><h2>Nosso menu</h2><p>Escolha uma categoria ou pesquise um produto.</p></div>
+    </div>
+    <input id="search" class="search" placeholder="🔎 Procurar hambúrguer, bebida, combo..." oninput="renderProducts()">
+    <div class="categories" id="categories"></div>
+    <section class="grid" id="products"></section>
+
+    <div class="info">
+      <div>📱 <b>Pedidos</b><span>Envie o pedido diretamente pelo WhatsApp.</span></div>
+      <div>🛵 <b>Entrega</b><span>Informe a sua localização no momento do pedido.</span></div>
+      <div>💬 <b>Atendimento</b><span>Contacto rápido com a N´hora Burger.</span></div>
+    </div>
+
+    <p class="demo-note">Demonstração preparada pela Fely e Amigos | Soluções Digitais. Produtos e preços desta versão são exemplos e podem ser substituídos pelos dados reais da N´hora Burger.</p>
+  </main>
+
+  <aside class="cart-panel" id="cartPanel">
+    <div class="cart-head"><strong>🛒 O seu pedido</strong><button class="close" onclick="toggleCart()">✕</button></div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-foot">
+      <div class="total"><span>Total</span><span id="cartTotal">0 Kz</span></div>
+      <button class="checkout" onclick="sendWhatsApp()">📲 Finalizar pedido pelo WhatsApp</button>
+    </div>
+  </aside>
+
+<script>
+const WHATSAPP = "244955087238";
+
+const products = [
+  {id:1,name:"Burger Clássico",cat:"Hambúrgueres",price:3500,emoji:"🍔",desc:"Carne, queijo, alface, tomate e molho da casa."},
+  {id:2,name:"Burger Duplo",cat:"Hambúrgueres",price:5000,emoji:"🍔",desc:"Duas carnes, queijo, cebola e molho especial."},
+  {id:3,name:"Chicken Burger",cat:"Hambúrgueres",price:4000,emoji:"🍔",desc:"Frango crocante, queijo, alface e molho."},
+  {id:4,name:"Burger Bacon",cat:"Hambúrgueres",price:4800,emoji:"🥓",desc:"Carne, queijo, bacon crocante e molho barbecue."},
+  {id:5,name:"Combo Clássico",cat:"Combos",price:5500,emoji:"🍔",desc:"Burger + batata frita + refrigerante."},
+  {id:6,name:"Combo Duplo",cat:"Combos",price:7000,emoji:"🍔",desc:"Burger duplo + batata frita + refrigerante."},
+  {id:7,name:"Batata Frita",cat:"Acompanhamentos",price:1800,emoji:"🍟",desc:"Porção crocante para acompanhar o seu pedido."},
+  {id:8,name:"Batata com Queijo",cat:"Acompanhamentos",price:2800,emoji:"🍟",desc:"Batata frita com queijo e molho especial."},
+  {id:9,name:"Coca-Cola",cat:"Bebidas",price:1000,emoji:"🥤",desc:"Refrigerante gelado."},
+  {id:10,name:"Fanta",cat:"Bebidas",price:1000,emoji:"🥤",desc:"Refrigerante gelado."},
+  {id:11,name:"Água",cat:"Bebidas",price:500,emoji:"💧",desc:"Água mineral."},
+  {id:12,name:"Milkshake",cat:"Bebidas",price:2500,emoji:"🥤",desc:"Milkshake cremoso — sabores a confirmar."}
+];
+
+let activeCat = "Todos";
+let cart = JSON.parse(localStorage.getItem("nhoraCart") || "[]");
+
+function money(v){return new Intl.NumberFormat("pt-AO").format(v)+" Kz"}
+
+function renderCategories(){
+  const cats=["Todos",...new Set(products.map(p=>p.cat))];
+  document.getElementById("categories").innerHTML=cats.map(c=>
+    `<button class="cat ${c===activeCat?"active":""}" onclick="setCat('${c}')">${c}</button>`
+  ).join("");
+}
+
+function setCat(c){activeCat=c;renderCategories();renderProducts()}
+
+function renderProducts(){
+  const q=document.getElementById("search").value.toLowerCase().trim();
+  const list=products.filter(p=>(activeCat==="Todos"||p.cat===activeCat)&&
+    (!q||p.name.toLowerCase().includes(q)||p.desc.toLowerCase().includes(q)));
+  document.getElementById("products").innerHTML=list.length?list.map(p=>`
+    <article class="product">
+      <div class="photo">${p.emoji}</div>
+      <div class="product-body">
+        <h3>${p.name}</h3>
+        <div class="desc">${p.desc}</div>
+        <div class="bottom"><span class="price">${money(p.price)}</span><button class="add" onclick="addToCart(${p.id})">+ Adicionar</button></div>
+      </div>
+    </article>`).join(""):`<p class="empty">Nenhum produto encontrado.</p>`;
+}
+
+function addToCart(id){
+  const item=cart.find(x=>x.id===id);
+  if(item)item.qty++;
+  else cart.push({id,qty:1});
+  save();renderCart();toggleCart(true);
+}
+function changeQty(id,delta){
+  const item=cart.find(x=>x.id===id);if(!item)return;
+  item.qty+=delta;if(item.qty<=0)cart=cart.filter(x=>x.id!==id);
+  save();renderCart();
+}
+function save(){localStorage.setItem("nhoraCart",JSON.stringify(cart))}
+function renderCart(){
+  const box=document.getElementById("cartItems");
+  if(!cart.length){box.innerHTML='<div class="empty">O seu carrinho está vazio.</div>';}
+  else box.innerHTML=cart.map(i=>{const p=products.find(x=>x.id===i.id);return`
+    <div class="cart-row">
+      <div><strong>${p.name}</strong><small>${money(p.price)} cada</small></div>
+      <div class="qty"><button onclick="changeQty(${p.id},-1)">−</button><b>${i.qty}</b><button onclick="changeQty(${p.id},1)">+</button></div>
+    </div>`}).join("");
+  const count=cart.reduce((s,i)=>s+i.qty,0);
+  const total=cart.reduce((s,i)=>s+(products.find(p=>p.id===i.id).price*i.qty),0);
+  document.getElementById("cartCount").textContent=count;
+  document.getElementById("cartTotal").textContent=money(total);
+}
+function toggleCart(force){
+  const el=document.getElementById("cartPanel");
+  if(force===true)el.classList.add("open");
+  else if(force===false)el.classList.remove("open");
+  else el.classList.toggle("open");
+  renderCart();
+}
+function sendWhatsApp(){
+  if(!cart.length){alert("Adicione pelo menos um produto ao pedido.");return;}
+  let total=0;
+  let msg="Olá, N´hora Burger! 👋🍔%0A%0AGostaria de fazer este pedido:%0A";
+  cart.forEach(i=>{
+    const p=products.find(x=>x.id===i.id);const sub=p.price*i.qty;total+=sub;
+    msg+=`%0A• ${i.qty}x ${encodeURIComponent(p.name)} — ${encodeURIComponent(money(sub))}`;
+  });
+  msg+=`%0A%0A*Total: ${encodeURIComponent(money(total))}*`;
+  msg+=`%0A%0ANome:%0ALocalização/Endereço:%0AForma de pagamento:`;
+  window.open(`https://wa.me/${WHATSAPP}?text=${msg}`,"_blank");
+}
+renderCategories();renderProducts();renderCart();
+</script>
+</body>
+</html>
